@@ -3,10 +3,32 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Example
+namespace FlowControlExtensions
 {
     public static class FlowControlExtensions
     {
+        [DebuggerStepThrough]
+        public static void DoIfHasValue<T>(this T? obj, Action<T> action, bool doContinue = true) where T : struct
+        {
+            if (obj.HasValue)
+            {
+                action(obj.Value);
+            }
+            if (doContinue)
+                return;
+            ThrowInvalidOperationException<T, T>();
+        }
+
+        [DebuggerStepThrough]
+        public static TResult IfHasValue<T, TResult>(this T? obj, Func<T, TResult> func, bool doContinue = true, TResult defaultValue = default(TResult)) where T : struct
+        {
+            if (obj.HasValue)
+            {
+                return func(obj.Value);
+            }
+            return doContinue ? defaultValue : ThrowInvalidOperationException<T, TResult>();
+        }
+
         [DebuggerStepThrough]
         public static TResult IfNotNull<T,TResult>(this T obj, Expression<Func<T, TResult>> func, bool doContinue = true, TResult defaultValue = default(TResult)) where T : class
         {
@@ -31,7 +53,13 @@ namespace Example
                 action(obj);
             }
             if (doContinue) return;
-            throw new NullReferenceException(string.Format("Reference with type {0} was null.", typeof (T).FullName));
+            throw new NullReferenceException(string.Format("Tried to reference an instance of {0}, but it was null", typeof(T).FullName));
+        }
+
+        [DebuggerStepThrough]
+        private static TResult ThrowInvalidOperationException<T, TResult>()
+        {
+            throw new InvalidOperationException(string.Format("Tried to access value of nullable of {0}, but it had no value", typeof(T).FullName));
         }
 
         private class MemberNameCollector : ExpressionVisitor

@@ -58,7 +58,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="FlowControlExtensionsTest.cs" />
+    <Compile Include="FlowControlExtensions_DoIfHasValue.cs" />
+    <Compile Include="FlowControlExtensions_DoIfNotNull.cs" />
+    <Compile Include="FlowControlExtensions_IfHasValue.cs" />
+    <Compile Include="FlowControlExtensions_IfNotNull.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

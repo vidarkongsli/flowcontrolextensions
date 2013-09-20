@@ -1,12 +1,14 @@
 ﻿using System;
 
-namespace Example
+namespace FlowControlExtensions
 {
     internal class Program
     {
         private static void Main()
         {
-            Example8();
+            //Example8();
+            Example10();
+
         }
 
         public static void Example1()
@@ -99,12 +101,41 @@ namespace Example
             Console.WriteLine(person.Address.IfNotNull(a => a.ToString(), defaultValue : "(unknown)"));
             Console.ReadKey();
         }
+
+        public static void Example10()
+        {
+            var person = new Person {Name = "Jackie Chiles", Citizenship = Nationality.Us };
+            Console.Write("Citizenship:");
+            Console.Write(person.Citizenship.Value);
+            Console.ReadKey();
+        }
+
+        public static void Example11()
+        {
+            var person = new Person { Name = "Jackie Chiles", Citizenship = Nationality.Us };
+            Console.Write("Citizenship:");
+            Console.Write(person.Citizenship.IfHasValue(c => c.ToString()));
+            Console.ReadKey();
+        }
+        public static void Example12()
+        {
+            var person = new Person { Name = "Jackie Chiles", Citizenship = Nationality.Us };
+            Console.Write("Citizenship:");
+            Console.Write(person.Citizenship.IfHasValue(c => c.ToString(), defaultValue: "(unknown)"));
+            Console.ReadKey();
+        }
+    }
+
+    enum Nationality
+    {
+        No,Se,Dk,Uk,Us
     }
 
     internal class Person
     {
         public string Name { get; set; }
         public Address Address { get; set; }
+        public Nationality? Citizenship { get; set; }
     }
 
     internal class Address
