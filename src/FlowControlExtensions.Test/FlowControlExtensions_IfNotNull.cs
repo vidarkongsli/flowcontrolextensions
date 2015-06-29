@@ -1,13 +1,13 @@
 ﻿using System;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace FlowControlExtensions.Test
 {
-    [TestClass]
+    [TestFixture]
     public class FlowControlExtensions_IfNotNull
     {
-        [TestMethod]
+        [Test]
         public void Should_call_func_if_not_null()
         {
             var str = string.Empty;
@@ -15,7 +15,7 @@ namespace FlowControlExtensions.Test
             str.IfNotNull(s => answer).Should().Be(answer);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_throw_exception_if_null()
         {
             const string str = default(string);
@@ -23,14 +23,14 @@ namespace FlowControlExtensions.Test
             act.ShouldThrow<NullReferenceException>();
         }
 
-        [TestMethod]
+        [Test]
         public void Should_return_default_for_type_if_null()
         {
             const string str = default(string);
             Assert.IsNull(str.IfNotNull(s => string.Empty));
         }
 
-        [TestMethod]
+        [Test]
         public void Should_name_variable_and_class_and_method_in_exception()
         {
             Action act = () => ((SomeClass)null).IfNotNull(strange => strange.SomeMethod(), false);
@@ -40,7 +40,7 @@ namespace FlowControlExtensions.Test
                 .Where(e => e.Message.Contains("SomeClass"));
         }
 
-        [TestMethod]
+        [Test]
         public void Should_name_variable_and_class_and_property_in_exception()
         {
             Action act = () => ((SomeClass)null).IfNotNull(strange => strange.SomeProperty, false);
@@ -50,7 +50,7 @@ namespace FlowControlExtensions.Test
                 .Where(e => e.Message.Contains("SomeClass"));
         }
 
-        [TestMethod]
+        [Test]
         public void Should_return_default_alternative_when_null()
         {
             var res = ((SomeClass)null).IfNotNull(s => s.SomeProperty, defaultValue: string.Empty);

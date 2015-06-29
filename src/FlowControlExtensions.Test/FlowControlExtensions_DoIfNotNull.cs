@@ -1,13 +1,13 @@
 ﻿using System;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace FlowControlExtensions.Test
 {
-    [TestClass]
+    [TestFixture]
     public class FlowControlExtensions_DoIfNotNull
     {
-        [TestMethod]
+        [Test]
         public void Should_name_class_in_exception()
         {
             var someObject = new SomeClass();
@@ -17,7 +17,7 @@ namespace FlowControlExtensions.Test
                 .Where(e => e.Message.Contains("System.String"));
         }
 
-        [TestMethod]
+        [Test]
         public void Should_call_action_when_not_null()
         {
             var wasCalled = false;
@@ -25,13 +25,13 @@ namespace FlowControlExtensions.Test
             wasCalled.Should().Be(true);
         }
 
-        [TestMethod]
+        [Test]
         public void Should_continue_executing_when_null()
         {
             ((string)null).DoIfNotNull(x => Assert.Fail("Called action even if object was null."));
         }
 
-        [TestMethod]
+        [Test]
         public void Should_throw_exception_when_null_and_do_not_continue()
         {
             Action act = () => ((string)null).DoIfNotNull(x => Assert.Fail("Called action even if object was null."), doContinue: false);
