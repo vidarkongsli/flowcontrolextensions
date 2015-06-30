@@ -71,9 +71,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FlowControlExtensions\FlowControlExtensions.csproj">
+    <ProjectReference Include="..\FlowControlExtensions\GoWithTheFlow.csproj">
       <Project>{0383d4b9-eacf-44cf-854e-c4becd7f18a9}</Project>
-      <Name>FlowControlExtensions</Name>
+      <Name>GoWithTheFlow</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
