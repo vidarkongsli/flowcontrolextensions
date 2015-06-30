@@ -4,16 +4,14 @@ properties {
     $output_directory = "$base_directory\build"
     $dist_directory = "$base_directory\dist"
     $sln_file = "$src_directory\GoWithTheFlow.sln"
-    $target_config = "debug"
+    $target_config = "release"
     $framework_version = "v4.5.2"
     $xunit_path = "$src_directory\packages\xunit.runner.console.2.0.0\tools\xunit.console.exe"
     $ilmerge_path = "$src_directory\packages\ILMerge.2.14.1208\tools\ILMerge.exe"
-    $nuget_path = "$src_directory\.nuget\nuget.exe"
     $packages_dir = "$src_directory\packages"
     $buildNumber = 0;
     $version = "1.5.0.0"
     $preRelease = $null
-    $runsOnBuildServer = $false
     $test_report_dir = "$base_directory\TestResult"
 }
 
@@ -26,14 +24,13 @@ task -name restore-nuget -action {
     }
 }
 
-
 task Clean {
     rmdir $output_directory -ea SilentlyContinue -recurse
     rmdir $dist_directory -ea SilentlyContinue -recurse
     exec { run-msbuild $sln_file 'clean' $target_config }
 }
 
-task -name patch-assemblyinfo -precondition { return $runsOnBuildServer } -action {
+task -name patch-assemblyinfo -action {
     exec {
         function PatchFile ([string] $pattern, [string] $replaceString, [string] $fullPath){
             (gc $fullPath) -replace $pattern, $replaceString | out-file $fullPath
@@ -41,20 +38,26 @@ task -name patch-assemblyinfo -precondition { return $runsOnBuildServer } -actio
     
         Get-ChildItem $src_dir -Recurse | ? { $_.Name -eq "AssemblyInfo.cs" } | % {
             $assemblyVersionPattern = 'AssemblyVersion\("(\d+).(\d+).(\*|\d+\.\d+|\d+\.\*)"\)' 
-            $assembyVersionReplacement ='AssemblyVersion("' + $build_version + '")'
+            $assembyVersionReplacement ='AssemblyVersion("' + $version + '")'
             PatchFile $assemblyVersionPattern $assembyVersionReplacement $_.FullName
     
             $assemblyFileVersionPattern = 'AssemblyFileVersion\("(\d+).(\d+).(\*|\d+\.\d+|\d+\.\*)"\)' 
-            $assembyFileVersionReplacement ='AssemblyFileVersion("' + $build_version + '")'
+            $assembyFileVersionReplacement ='AssemblyFileVersion("' + $version + '")'
             PatchFile $assemblyFileVersionPattern $assembyFileVersionReplacement $_.FullName
         }    
     }
 }
 
-task Compile -depends restore-nuget, patch-assemblyinfo {
+task Compile-release -depends clean, patch-assemblyinfo, restore-nuget, Compile -action {
+    exec {
+        git checkout -- "$src_directory/FlowControlExtensions.Test/Properties/AssemblyInfo.cs"
+        git checkout -- "$src_directory/FlowControlExtensions/Properties/AssemblyInfo.cs"
+    }
+} 
+
+task Compile -depends restore-nuget {
     exec { run-msbuild $sln_file 'build' $target_config }
 }
-
 
 task -name ensure-nunit -action {
     exec {
@@ -71,23 +74,14 @@ task RunTests -depends Compile, ensure-nunit {
     }
 }
 
-task ILMerge -depends Compile {
-    $input_dlls = "$output_directory\Thinktecture.IdentityServer3.dll"
-
-    Get-ChildItem -Path $output_directory -Filter *.dll |
-        foreach-object {
-            # Exclude Thinktecture.IdentityServer3.dll as that will be the primary assembly
-            if ("$_" -ne "Thinktecture.IdentityServer3.dll" -and
-                "$_" -ne "Owin.dll") {
-                $input_dlls = "$input_dlls $output_directory\$_"
-            }
+task copy-to-dist -depends Compile-release, runtests -action {
+    exec {
+        md $dist_directory\lib\net40 -ErrorAction 'SilentlyContinue' | out-null
+        copy "$src_directory\FlowControlExtensions\bin\$target_config\GoWithTheFlow.dll" $dist_directory\lib\net40
     }
-
-    New-Item $dist_directory\lib\net45 -Type Directory
-    Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:library /out:$dist_directory\lib\net45\Thinktecture.IdentityServer3.dll $input_dlls"
 }
 
-task CreateNuGetPackage -depends ILMerge {
+task CreateNuGetPackage -depends copy-to-dist {
     $vSplit = $version.Split('.')
     if($vSplit.Length -ne 4)
     {
@@ -105,13 +99,9 @@ task CreateNuGetPackage -depends ILMerge {
         $packageVersion = $packageVersion + "-build" + $buildNumber.ToString().PadLeft(5,'0')
     }
 
-
-    copy-item $src_directory\IdentityServer3.nuspec $dist_directory
-    copy-item $output_directory\Thinktecture.IdentityServer3.xml $dist_directory\lib\net45\
-    exec { . $nuget_path pack $dist_directory\IdentityServer3.nuspec -BasePath $dist_directory -o $dist_directory -version $packageVersion }
+    copy-item $src_directory\Flowcontrolextensions\GoWithTheFlow.nuspec $dist_directory
+    exec { nuget pack $dist_directory\GoWithTheFlow.nuspec -BasePath $dist_directory -o $dist_directory -version $packageVersion }
 }
-
-
 
 function nunit_console_runner {
     $nunit_dir = gci -Path "$src_dir\packages" -Filter Nunit.Runners* | sort -Property Name | select -Last 1
@@ -119,15 +109,10 @@ function nunit_console_runner {
 }
 
 function run-msbuild($sln_file, $t, $cfg) {
-    $v = if ($runsOnBuildServer) { 'n'} else { 'q' } 
-    msbuild /nologo /verbosity:$v $sln_file /t:$t /p:Configuration=$cfg /p:TargetFrameworkVersion=v4.5
+    msbuild /nologo /verbosity:q $sln_file /t:$t /p:Configuration=$cfg /p:TargetFrameworkVersion=v4.5
 }
 
 function run_tests($testassemblies, $reportfile, $suiteName) {
-    if ($runsOnBuildServer) { }
     if (-not(test-path $test_report_dir)) { md $test_report_dir | out-null }
     & (nunit_console_runner) $testassemblies /nologo /nodots /framework:v4.5 /xml=$reportfile 
-    if ($runsOnBuildServer) { 
-        
-    }
 }

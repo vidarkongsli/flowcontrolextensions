@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <id>gowiththeflow</id>
+    <version>0.0.0</version>
+    <title>GoWithTheFlow</title>
+    <authors>Vidar Kongsli</authors>
+    <owners>Vidar Kongsli</owners>
     <licenseUrl>https://raw.githubusercontent.com/vidarkongsli/flowcontrolextensions/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/vidarkongsli/flowcontrolextensions</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>Simple flow control extensions</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>csharp .net flow-control</tags>
