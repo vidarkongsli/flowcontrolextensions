@@ -3,7 +3,7 @@ properties {
     $src_directory = "$base_directory\src"
     $output_directory = "$base_directory\build"
     $dist_directory = "$base_directory\dist"
-    $sln_file = "$src_directory\FlowControlExtensions.sln"
+    $sln_file = "$src_directory\GoWithTheFlow.sln"
     $target_config = "debug"
     $framework_version = "v4.5.2"
     $xunit_path = "$src_directory\packages\xunit.runner.console.2.0.0\tools\xunit.console.exe"
@@ -66,7 +66,7 @@ task -name ensure-nunit -action {
 
 task RunTests -depends Compile, ensure-nunit {
     exec {
-        run_tests "$src_directory\FlowControlExtensions.Test\bin\$target_config\FlowControlExtensions.Test.dll" `
+        run_tests "$src_directory\FlowControlExtensions.Test\bin\$target_config\GoWithTheFlow.Test.dll" `
             "$test_report_dir\$($build_version)_unit_TestResult.xml" "Unit tests"
     }
 }
