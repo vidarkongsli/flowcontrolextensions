@@ -3,7 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
-namespace FlowControlExtensions.Test
+namespace GoWithTheFlow.Test
 {
     [TestFixture]
     public class FlowControlExtensions_DoIfHasValue

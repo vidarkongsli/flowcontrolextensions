@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace FlowControlExtensions
+namespace GoWithTheFlow
 {
     public static class FlowControlExtensions
     {

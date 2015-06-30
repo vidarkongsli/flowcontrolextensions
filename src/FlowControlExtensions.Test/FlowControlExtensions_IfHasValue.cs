@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace FlowControlExtensions.Test
+namespace GoWithTheFlow.Test
 {
     [TestFixture]
     public class FlowControlExtensions_IfHasValue
