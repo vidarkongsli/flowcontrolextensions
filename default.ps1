@@ -6,11 +6,9 @@ properties {
     $sln_file = "$src_directory\GoWithTheFlow.sln"
     $target_config = "release"
     $framework_version = "v4.5.2"
-    $xunit_path = "$src_directory\packages\xunit.runner.console.2.0.0\tools\xunit.console.exe"
-    $ilmerge_path = "$src_directory\packages\ILMerge.2.14.1208\tools\ILMerge.exe"
     $packages_dir = "$src_directory\packages"
     $buildNumber = 0;
-    $version = "1.5.0.0"
+    $version = "1.0.0.0"
     $preRelease = $null
     $test_report_dir = "$base_directory\TestResult"
 }
@@ -78,6 +76,7 @@ task copy-to-dist -depends Compile-release, runtests -action {
     exec {
         md $dist_directory\lib\net40 -ErrorAction 'SilentlyContinue' | out-null
         copy "$src_directory\FlowControlExtensions\bin\$target_config\GoWithTheFlow.dll" $dist_directory\lib\net40
+        copy "$src_directory\FlowControlExtensions\bin\$target_config\GoWithTheFlow.dll" $dist_directory\lib\net45
     }
 }
 
