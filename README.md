@@ -5,6 +5,7 @@ See blog post [Handling null checks efficiently](http://www.kongsli.net/nblog/20
 
 Installation
 ------------
+Install using Nuget Package Manager:
 
 	PM> Install-Package GoWithTheFlow -Pre
 
