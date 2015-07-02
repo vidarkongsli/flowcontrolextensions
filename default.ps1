@@ -75,6 +75,7 @@ task RunTests -depends Compile, ensure-nunit {
 task copy-to-dist -depends Compile-release, runtests -action {
     exec {
         md $dist_directory\lib\net40 -ErrorAction 'SilentlyContinue' | out-null
+        md $dist_directory\lib\net45 -ErrorAction 'SilentlyContinue' | out-null
         copy "$src_directory\FlowControlExtensions\bin\$target_config\GoWithTheFlow.dll" $dist_directory\lib\net40
         copy "$src_directory\FlowControlExtensions\bin\$target_config\GoWithTheFlow.dll" $dist_directory\lib\net45
     }
