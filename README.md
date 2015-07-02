@@ -1,6 +1,6 @@
 Go with the flow
 =====================
-Contains simple library for managing flow control for null checks.
+Contains simple library for managing flow control for null checks in C#.
 See blog post [Handling null checks efficiently](http://www.kongsli.net/nblog/2013/09/17/handling-null-checks-efficiently/)
 
 Installation
